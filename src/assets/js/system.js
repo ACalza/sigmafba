@@ -7,12 +7,10 @@
 var System = function(network, system){
   var _private = {
     network: network,
-    nodes: null,     //all node elements class:node under <g> class:nodes
-    links: null,    //all link elements class:link under <g> class:nodes
     force: null,
     system: null,
-    linkSet: [],    //link data
-    nodesSet: [],   //node data
+    edges: [],    //link data
+    nodes: [],   //node data
     metaboliteRadius: 10
   };
   //initalize Pathway
@@ -24,11 +22,17 @@ var System = function(network, system){
       //Create reaction objects
       buildReactions(system);
 
+      addEdges();
+      _private.network.refresh();
+  }
+  function addEdges(){
+    for(var i = 0; i < _private.edges.length; i++)
+      _private.network.graph.addEdge(_private.edges[i])
   }
   function buildMetabolites(system){
       // loop and bind metabolite data to metabolite node to nodeset
       for (var i = 0; i<system.metabolites.length; i++){
-        _private.nodesSet.push(new Metabolite(_private.network, system.metabolites[i].name,
+        _private.nodes.push(new Metabolite(_private.network, system.metabolites[i].name,
                                                   system.metabolites[i].id, _private.metaboliteRadius));
       }
   }
@@ -50,9 +54,9 @@ var System = function(network, system){
       var s, t;
       for (var i = 0; i<system.reactions.length; i++){
           if(system.reactions[i].flux_value){
-              _private.nodesSet.push(new Reaction(_private.network, system.reactions[i].name,
+              _private.nodes.push(new Reaction(_private.network, system.reactions[i].name,
                                                   system.reactions[i].id,
-                                                  3,
+                                                  3, //hardcoded rn
                                                   //radiusScale(system.reactions[i].flux_value),
                                                   system.reactions[i].flux_value
                                                 ));
@@ -72,25 +76,25 @@ var System = function(network, system){
           }
 
       }
-      var nodesMap = map(_private.nodesSet);
+      var nodesMap = map(_private.nodes);
 
       for (var j=0; j<tempLinks.length;j++){
           //ineffiecient, but will do for now
 
-          s = _private.nodesSet[nodesMap[tempLinks[j].source]];
+          s = _private.nodes[nodesMap[tempLinks[j].source]];
 
-          t =  _private.nodesSet[nodesMap[tempLinks[j].target]];
+          t =  _private.nodes[nodesMap[tempLinks[j].target]];
 
-          _private.linkSet.push({id: s.getID()+"-"+t.getID(), source: s, target: t});
+          _private.edges.push({id: s.getID()+"-"+t.getID(), source: s.getID(), target: t.getID()});
       }
 
   }
   //to be fixed later
   //utilities function
-  function map(nodesSet){
+  function map(nodes){
       var ret = {};
-      for (var j=0; j<nodesSet.length;j++){
-        ret[nodesSet[j].getID()] = j;
+      for (var j=0; j<nodes.length;j++){
+        ret[nodes[j].getID()] = j;
       }
       return ret;
   }
