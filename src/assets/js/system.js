@@ -67,7 +67,6 @@ var System = function(network, system){
                     s = m[k];
                     t = system.reactions[i].id;
                   }
-                  break;
                   tempLinks.push({id: s+"-"+t, source: s, target: t});
               }
           }
@@ -78,8 +77,6 @@ var System = function(network, system){
       for (var j=0; j<tempLinks.length;j++){
           //ineffiecient, but will do for now
 
-          //console.log(tempLinks[j])
-          console.log(_private.nodesSet);
           s = _private.nodesSet[nodesMap[tempLinks[j].source]];
 
           t =  _private.nodesSet[nodesMap[tempLinks[j].target]];
@@ -89,57 +86,6 @@ var System = function(network, system){
 
   }
   //to be fixed later
-  function addMarkers(){
-      var markers = [
-                      {id: "triangle", path: 'M 0,0 m -5,-5 L 5,0 L -5,5 Z', viewbox: '-5 -5 10 10' }
-                    ];
-      var marker = _private.system.insert("g")
-                            .attr("class", "markers")
-                            .selectAll(".marker")
-                            .data(markers)
-                            .enter()
-                              .append('svg:marker')
-                              .attr('id', function(d){ return d.id;})
-                              .attr('markerHeight', 5)
-                              .attr('markerWidth', 5)
-                              .attr('markerUnits', 'strokeWidth')
-                              .attr('orient', 'auto')
-                              .attr('refX', 13)
-                              .attr('refY', 0)
-                              .attr('fill', palette.linktest)
-                              .attr('opacity', 1)
-                              .attr('viewBox', function(d){ return d.viewbox; })
-                              .append('svg:path')
-                              .attr('d', function(d){ return d.path; });
-  }
-  //draw function
-  function draw(){
-    // draw links
-    addMarkers();
-    _private.links = _private.links
-      .enter()
-      .append("g")
-      .attr("class", "link")
-      .attr("id", function(d) {
-          return "id-" + d.id;
-      })
-      .insert("line")
-      .style("stroke", "#ccc")
-      .style("stroke-width", 2)
-      .style("opacity", 1)
-      .attr("marker-end", function(d) {
-          if (d.source.getType() == "r") {
-              return "url(#triangle)";
-          }
-      });
-      // call draw function in reaction and metabolite node class
-      for(var i = 0; i< _private.nodesSet.length; i++){
-          _private.nodesSet[i].draw();
-      }
-
-
-
-  }
   //utilities function
   function map(nodesSet){
       var ret = {};
@@ -148,13 +94,5 @@ var System = function(network, system){
       }
       return ret;
   }
-  function tick(){
-    _private.nodes.attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")"; });
-    _private.links.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-  }
-  //returns nothing as of now, everything done when you create the object
+
 };

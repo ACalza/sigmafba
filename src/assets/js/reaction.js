@@ -2,8 +2,8 @@
 /* global palette */
 'use strict';
 
-var Reaction = function(name, id, radius, flux_value) {
-    var that = new Node(name, id, "r", radius);
+var Reaction = function(network, name, id, radius, flux_value) {
+    var that = new Node(network, name, id, "r", radius);
     that.network.graph.addNode({
       "id": id,
       "label": name,
